@@ -1,6 +1,10 @@
 import bs4
 from urllib.request import urlopen
 import datetime
+from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import parseaddr, formataddr
+import smtplib
 
 send_list = []
 
@@ -17,9 +21,36 @@ def handle_page(url):
 
         time_delta = 5
         if now.date() - time.date() < datetime.timedelta(time_delta):
-            print(time)
             send_list.append((info, link, time))    
 
+def _format_addr(s):
+    name, addr = parseaddr(s)
+    return formataddr((Header(name, "utf-8").encode(), addr))
 
-handle_page("http://jwc.sjtu.edu.cn/web/sjtu/198076.htm")
-print(send_list)
+def send_email():
+    #Form msg string to send
+    msg_str = ""
+    for info in send_list:
+        msg_str += info[0] + '\n' + info[1] + '\n\n'
+
+    from_addr = "xxx@xxxx"#addr of sender
+    password = "xxxx"#pwd of login a sending server
+    to_addr = "xxx@xxxx"#addr of receiver
+    smtp_server = "xxxx"#SMTP server
+
+    msg = MIMEText(msg_str, "plain", "utf-8")
+    msg['From'] = _format_addr('SJTU_NOTIFIER<%s>' % from_addr)
+    msg['To'] = _format_addr('Dear QJR<%s>' % to_addr)
+    msg['Subject'] = Header('JWC INFO UPDATES', 'utf-8').encode()
+
+    server = smtplib.SMTP(smtp_server, 25) #server object
+    server.set_debuglevel(1) #print log
+    server.login(from_addr, password) #login
+    server.sendmail(from_addr, [to_addr], msg.as_string())
+    server.quit()
+
+def main():
+    handle_page("http://jwc.sjtu.edu.cn/web/sjtu/198076.htm")
+    send_email()
+
+main()
