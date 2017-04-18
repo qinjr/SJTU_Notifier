@@ -55,7 +55,7 @@ def send_email():
 def job():
     handle_page("http://jwc.sjtu.edu.cn/web/sjtu/198076.htm")
     send_email()
-    print("send")
+    print(datetime.datetime.now())
 
 #set auto run time using schedule
 schedule.every().day.at("00:00").do(job)
