@@ -5,6 +5,9 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
 import smtplib
+import schedule
+import time
+
 
 send_list = []
 
@@ -33,10 +36,10 @@ def send_email():
     for info in send_list:
         msg_str += info[0] + '\n' + info[1] + '\n\n'
 
-    from_addr = "xxx@xxxx"#addr of sender
-    password = "xxxx"#pwd of login a sending server
-    to_addr = "xxx@xxxx"#addr of receiver
-    smtp_server = "xxxx"#SMTP server
+    from_addr = ""#addr of sender
+    password = ""#pwd of login a sending server
+    to_addr = ""#addr of receiver
+    smtp_server = ""#SMTP server
 
     msg = MIMEText(msg_str, "plain", "utf-8")
     msg['From'] = _format_addr('SJTU_NOTIFIER<%s>' % from_addr)
@@ -49,8 +52,13 @@ def send_email():
     server.sendmail(from_addr, [to_addr], msg.as_string())
     server.quit()
 
-def main():
+def job():
     handle_page("http://jwc.sjtu.edu.cn/web/sjtu/198076.htm")
     send_email()
+    print("send")
 
-main()
+#set auto run time using schedule
+schedule.every().day.at("00:00").do(job)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
