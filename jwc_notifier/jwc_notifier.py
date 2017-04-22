@@ -53,6 +53,7 @@ def send_email():
     server.quit()
 
 def job():
+    del send_list[:]
     handle_page("http://jwc.sjtu.edu.cn/web/sjtu/198076.htm")
     send_email()
     print(datetime.datetime.now())
