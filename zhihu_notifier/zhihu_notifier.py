@@ -40,8 +40,7 @@ def get_answers(author, ans_need):
 def job():
     for i in range(len(author_list)):
         new_ans_num = get_answer_num(author_list[i])
-        print(new_ans_num)
-        if (new_ans_num > 640):
+        if (new_ans_num > answer_nums[i]):
             author = author_list[i]
             ans_need = new_ans_num - answer_nums[i]
             get_answers(author, 4)
